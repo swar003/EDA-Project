@@ -98,50 +98,28 @@ if uploaded_file is not None:
             st.text_area("Extracted PDF Text:", pdf_text, height=300)
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
-    st.write("Summary of the CSV file:")
-    var_dict = {'df': df}
-    o_summary,summary= summary_gen(df)
-    FORMAT_INSTRUCTIONS = """
-The output must follow the exact JSON format below:
-[
-    {{
-        "question": "...",
-        "visualization": "...",
-        "reason": "..."
-    }},
-    ...
-]
-
-Ensure that the JSON format is strictly followed with no additional text outside of the JSON structure.
-"""
+    if 'df' in locals():
+        st.write("Summary of the CSV or Excel file:")
+        var_dict = {'df': df}
+        o_summary, summary = summary_gen(df)
+        FORMAT_INSTRUCTIONS = """
+        The output must follow the exact JSON format below:
+        [
+            {
+                "question": "...",
+                "visualization": "...",
+                "reason": "..."
+            },
+            ...
+        ]
     
-    univariate_data = goal_generate(summary,FORMAT_INSTRUCTIONS)
-    #st.write(univariate_data)
-    code_generation(univariate_data,'Univariate Analysis',df,summary)
-
-    multivariate_data = mul_goal_generate(summary,FORMAT_INSTRUCTIONS)
-    code_generation(multivariate_data,'Multivariate Analysis',df,summary)
+        Ensure that the JSON format is strictly followed with no additional text outside of the JSON structure.
+        """
     
+        univariate_data = goal_generate(summary, FORMAT_INSTRUCTIONS)
+        code_generation(univariate_data, 'Univariate Analysis', df, summary)
+    
+        multivariate_data = mul_goal_generate(summary, FORMAT_INSTRUCTIONS)
+        code_generation(multivariate_data, 'Multivariate Analysis', df, summary)
 else:
-    st.info("Please upload a file from the sidebar to view its content.")
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    st.warning("EDA summary is only available for tabular files like CSV or Excel.")
