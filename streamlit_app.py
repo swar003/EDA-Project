@@ -21,6 +21,8 @@ import streamlit as st
 import sys
 import io
 import requests
+import fitz
+import pdfplumber
 from langchain import OpenAI
 from langchain.callbacks import get_openai_callback
 from langchain.chains import ConversationChain
@@ -54,7 +56,7 @@ st.markdown(github_css(css_url), unsafe_allow_html=True)
 
 # Create a sidebar for file upload
 st.sidebar.header("📁 Upload Your File")
-uploaded_file = st.sidebar.file_uploader("Choose a file", type = None)
+uploaded_file = st.sidebar.file_uploader("Choose a file", type=["csv", "json", "txt", "xlsx", "xls", "pdf"])
 
 # Display content on the main page
 st.title("🤖 EDA Automation")
@@ -73,14 +75,10 @@ if uploaded_file is not None:
     # Read and display content if it's a text-based file
     try:
         if uploaded_file.type == "text/csv":
-            import pandas as pd
-
             df = pd.read_csv(uploaded_file)
             st.write("### Preview of Uploaded CSV File:")
             st.dataframe(df)
         elif uploaded_file.type == "application/json":
-            import json
-
             content = json.load(uploaded_file)
             st.write("### Content of Uploaded JSON File:")
             st.json(content)
@@ -89,11 +87,16 @@ if uploaded_file is not None:
             st.write("### Content of Uploaded Text File:")
             st.text(content)
         elif "spreadsheet" in uploaded_file.type:
-            import pandas as pd
-
             df = pd.read_excel(uploaded_file)
             st.write("### Preview of Uploaded Excel File:")
             st.dataframe(df)
+        elif uploaded_file.type == "application/pdf":
+            st.write("### Content of Uploaded PDF File:")
+            with fitz.open(stream=uploaded_file.read(), filetype="pdf") as doc:
+                pdf_text = ""
+                for page in doc:
+                    pdf_text += page.get_text()
+            st.text_area("Extracted PDF Text:", pdf_text, height=300)
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
     st.write("Summary of the CSV file:")
