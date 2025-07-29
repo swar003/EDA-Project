@@ -22,7 +22,6 @@ import sys
 import io
 import requests
 import fitz
-import pdfplumber
 from langchain import OpenAI
 from langchain.callbacks import get_openai_callback
 from langchain.chains import ConversationChain
