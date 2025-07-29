@@ -54,7 +54,7 @@ st.markdown(github_css(css_url), unsafe_allow_html=True)
 
 # Create a sidebar for file upload
 st.sidebar.header("📁 Upload Your File")
-uploaded_file = st.sidebar.file_uploader("Choose a file", type=["csv"])
+uploaded_file = st.sidebar.file_uploader("Choose a file", type = None)
 
 # Display content on the main page
 st.title("🤖 EDA Automation")
