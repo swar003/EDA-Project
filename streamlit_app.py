@@ -98,7 +98,7 @@ if uploaded_file is not None:
             st.text_area("Extracted PDF Text:", pdf_text, height=300)
     except Exception as e:
         st.error(f"An error occurred while reading the file: {e}")
-    if df is not None:
+    if 'df' is not None:
         st.write("Summary of the CSV or Excel file:")
         var_dict = {'df': df}
         o_summary, summary = summary_gen(df)
